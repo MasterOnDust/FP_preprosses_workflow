@@ -12,9 +12,9 @@ ao_output_path: "results/ao"
 APVI_index_outpath: "results/apv"
 Precipitation: "results/precip"
 
-flexpart_path: "/projects/NS2806K/ovewh/tracing_the_winds/flexpart/production_run"
-flexdust_path: "../../FLEXDUST_emission_flux/FLEXDUST_kok"
-source_contrib_path: "../../flexpart/production_run/improved_kok_flexdust_1999_2019"
+flexpart_path: "/cluster/work/users/ovewh/FLEXPART_updated_domain"
+flexdust_path: "/cluster/work/users/ovewh/FLEXDUST1999_2019"
+source_contrib_path: "/cluster/work/users/ovewh/source_contrib_1999_2019"
 flexdust_results: "results/model_results/flexdust"
 intermediate_results_models: "results/model_results/intermediate_results"
 source_contrib_results: "results/model_results/source_contrib"
@@ -48,10 +48,10 @@ clim_date1: 2019
 
 # Domain for processing FLEXPART/FLEXDUST model output on
 domain:
-    lon0: 73
-    lon1: 115
-    lat0: 30
-    lat1: 50
+    lon0: 50
+    lon1: 128
+    lat0: 25
+    lat1: 65
 
 # Recepotor Location used in the procject.
 
@@ -59,7 +59,7 @@ receptors:
     SACOL:
         lon: 104.1370
         lat: 35.96400
-    BADOE:
+    BAODE:
         lon: 111.1700
         lat: 39.00300
     LANTIAN:
@@ -71,9 +71,9 @@ receptors:
     SHAPOTOU:
         lon: 105.0475
         lat: 34.18000
-    YINCHUAN:
-        lon: 106.1010
-        lat: 38.50000
+    ULANTATAL:
+        lon: 105.53
+        lat: 39.18
     LUOCHUAN:
         lat: 109.4240
         lon: 35.71000
@@ -99,11 +99,16 @@ source_regions:
             lon1: 90
             lat0: 43
             lat1: 47
-        qaidam_basin:
+        quaidam_basin:
             lon0: 90
             lon1: 100
             lat0: 35
             lat1: 40
+        central_asia:
+            lon0: 56
+            lon1: 73
+            lat0: 26
+            lat1: 47        
 
 # Number of latitude bins used in temperature gradient calculation
 n_bins_temperature_gradient: 17
