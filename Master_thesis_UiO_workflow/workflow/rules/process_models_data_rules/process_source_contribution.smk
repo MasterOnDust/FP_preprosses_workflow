@@ -9,7 +9,7 @@ def get_paths(path0,sdate, edate, kind, location, size):
         tag='SILT'
     for year in years:
         temp_path=path0+'/'+kind+'/'+size+'/'+year+'/'+kind
-        for dstart,dend in zip(['0311','0331','0430'],['0331', '0430','0531']):
+        for dstart,dend in zip(['0301','0331','0430'],['0331', '0430','0531']):
             paths.append(temp_path+'_'+location+'_'+tag+'_'+year+dstart+'-'+year+dend+'.nc')
 
     return paths
@@ -54,10 +54,12 @@ rule process_flexpart_output_march:
         flexdust_path = config['flexdust_path']+'/{year}/',
         flexpart_path = lambda wildcards: get_flexpart_input_paths(wildcards,edate='0331')
     output: 
-        config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0311-{year}0331.nc',
+        config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0301-{year}0331.nc',
     wildcard_constraints:
         tag='CLAY|SILT',
-    
+    resources:
+        time="00:30:00",
+        memory="32GB"
     params:
         x0 = config['domain']['lon0'],
         x1 = config['domain']['lon1'],
