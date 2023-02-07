@@ -60,6 +60,38 @@ MODEL_SDATE=config['m_sdate']
 MODEL_EDATE=config['m_edate']
 SEASONS=['DJF','MAM']
 
+rule make_source_contrib_march:
+    input:
+        expand(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0301-{year}0331.zarr',
+                kind=['drydep', 'wetdep'],location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
+                size=['2micron'],tag=['CLAY'],
+                year=[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2011,2012,2013,2014,2015,2016,2017,2018,2019]),
+        expand(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0301-{year}0331.zarr',
+                kind=['drydep', 'wetdep'],location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
+                size=['20micron'],tag=['SILT'],
+                year=[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2011,2012,2013,2014,2015,2016,2017,2018,2019])
+
+rule make_source_contrib_apr:
+    input:
+        expand(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0331-{year}0430.zarr',
+                kind=['drydep', 'wetdep'],location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
+                size=['2micron'],tag=['CLAY'],
+                year=[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2011,2012,2013,2014,2015,2016,2017,2018,2019]),
+        expand(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0331-{year}0430.zarr',
+                kind=['drydep', 'wetdep'],location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
+                size=['20micron'],tag=['SILT'],
+                year=[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2011,2012,2013,2014,2015,2016,2017,2018,2019])
+rule make_source_contrib_may:
+    input:
+        expand(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0430-{year}0531.zarr',
+        kind=['drydep', 'wetdep'],location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
+                size=['2micron'],tag=['CLAY'],
+                year=[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2011,2012,2013,2014,2015,2016,2017,2018,2019]),
+        expand(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0430-{year}0531.zarr',
+        kind=['drydep', 'wetdep'],location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
+                size=['20micron'],tag=['SILT'],
+                year=[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2011,2012,2013,2014,2015,2016,2017,2018,2019])
+
 rule make_deposition:
     input:
         expand('results/model_results/time_series/{kind}/{kind}.{location}.{region}.{size}.MAM.{sdate}-{edate}.nc',

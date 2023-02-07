@@ -20,12 +20,14 @@ rule resample_source_contrib:
                                            wildcards.kind, wildcards.location, wildcards.size)
         
     output:
-        outpath=config['intermediate_results_models']+'/{kind}/{kind}.{location}.{size}.monthly.{sdate}-{edate}.nc'
+        outpath=config['intermediate_results_models']+'/{kind}/{kind}.{location}.{size}.monthly.{sdate}-{edate}.{ext}'
     wildcard_constraints:
         location='|'.join(config['receptors'].keys()),
         size='2micron|20micron',
-        kind='drydep|wetdep'
+        kind='drydep|wetdep',
+        ext='nc|zarrr'
     threads: 1
+
     run: 
         from dust.utils.resample import resample_monthly, concatenate_monthly
         import time
@@ -48,47 +50,54 @@ def get_flexpart_input_paths(w, edate):
         paths.append(folder+'/{}.nc'.format(''.join(ncfile.ncfile))) 
     return paths
 
-
 rule process_flexpart_output_march:
     input:
         flexdust_path = config['flexdust_path']+'/{year}/',
         flexpart_path = lambda wildcards: get_flexpart_input_paths(wildcards,edate='0331')
     output: 
-        config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0301-{year}0331.nc',
+        outpath=config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0301-{year}0331.nc',
     wildcard_constraints:
-        tag='CLAY|SILT',
+        tag='CLAY|SILT'
     resources:
         time="00:30:00",
-        memory="32GB"
+        memory_per_job="16GB",
+        max_threads=4
+    threads:1
     params:
         x0 = config['domain']['lon0'],
         x1 = config['domain']['lon1'],
         y0 = config['domain']['lat0'],
         y1 = config['domain']['lat1'],
-        rp = config['source_contrib_path']
-    
-    shell:
-        "process_flexpart {input.flexpart_path} {input.flexdust_path}/ --x0 {params.x0} --x1 {params.x1} --y0 {params.y0} --y1 {params.y1} --op {params.rp}/{wildcards.kind}/{wildcards.size}/{wildcards.year}"
-
+        rp = config['source_contrib_path'],
+        use_slurm = True,
+        use_dask = True
+    notebook:
+        "../../notebooks/process_raw_output.py.ipynb"
 
 rule process_flexpart_output_april:
     input:
         flexdust_path = config['flexdust_path']+'/{year}/',
         flexpart_path = lambda wildcards: get_flexpart_input_paths(wildcards,edate='0430')
     output: 
-        config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0331-{year}0430.nc',
+        outpath=config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0331-{year}0430.nc'
     wildcard_constraints:
-        tag='CLAY|SILT',
-    
+        tag='CLAY|SILT'
+    resources:
+        time="00:30:00",
+        memory_per_job="16GB",
+        max_threads=4
+    threads:1
     params:
         x0 = config['domain']['lon0'],
         x1 = config['domain']['lon1'],
         y0 = config['domain']['lat0'],
         y1 = config['domain']['lat1'],
-        rp = config['source_contrib_path']
+        rp = config['source_contrib_path'],
+        use_slurm = True,
+        use_dask = True
     
-    shell:
-        "process_flexpart {input.flexpart_path} {input.flexdust_path}/ --x0 {params.x0} --x1 {params.x1} --y0 {params.y0} --y1 {params.y1} --op {params.rp}/{wildcards.kind}/{wildcards.size}/{wildcards.year}"
+    notebook:
+        "../../notebooks/process_raw_output.py.ipynb"
 
 
 
@@ -99,60 +108,102 @@ rule process_flexpart_output_may:
     output: 
         config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0430-{year}0531.nc',
     wildcard_constraints:
-        tag='CLAY|SILT',
-    
+        tag='CLAY|SILT'
+    resources:
+        time="00:30:00",
+        memory_per_job="16GB",
+        max_threads=4
+    threads:1
+
     params:
         x0 = config['domain']['lon0'],
         x1 = config['domain']['lon1'],
         y0 = config['domain']['lat0'],
         y1 = config['domain']['lat1'],
-        rp = config['source_contrib_path']
+        rp = config['source_contrib_path'],
+        use_slurm = True,
+        use_dask = True
     
-    shell:
-        "process_flexpart {input.flexpart_path} {input.flexdust_path}/ --x0 {params.x0} --x1 {params.x1} --y0 {params.y0} --y1 {params.y1} --op {params.rp}/{wildcards.kind}/{wildcards.size}/{wildcards.year}"
+    notebook:
+        "../../notebooks/process_raw_output.py.ipynb"
 
 
-# rule process_flexpart_output:
-#     input:
-#         flexdust_path = config['flexdust_path']+'/{year}/',
-#         flexpart_paths = lambda wildcards: get_flexpart_input_paths(wildcards)
-#     output:
-#         config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0311-{year}0331.nc',
-#         config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0331-{year}0430.nc',
-#         config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0430-{year}0531.nc'
-#     wildcard_constraints:
-#         tag='CLAY|SILT',
-#     threads:1
-#     params:
-#         x0 = config['domain']['lon0'],
-#         x1 = config['domain']['lon1'],
-#         y0 = config['domain']['lat0'],
-#         y1 = config['domain']['lat1']
-#     run:
-#         import dust
-#         import xarray as xr 
-#         import os
-#         from dust.process_data_dust import process_per_pointspec, process_per_timestep, create_output
-#         # print(input.flexdust_path)
-#         flexdust_ds = dust.read_flexdust_output(input.flexdust_path+'/')['dset']
-#         flexdust_ds = flexdust_ds.sel(lon=slice(params.x0,params.x1), lat=slice(params.y0,params.y1))
-#         outpath = config['source_contrib_path']+f'/{wildcards.kind}/{wildcards.size}/{wildcards.year}'
-#         for fp_path in input.flexpart_paths:
-#             ds = xr.open_dataset(fp_path, chunks={'time':40, 'pointspec':15})
-#             ds, out_data, surface_sensitivity = process_per_pointspec(ds, flexdust_ds, params.x0, params.x1, params.y0, 
-#                                             params.y1, height=None)
-#             relcom_str=str(ds.RELCOM[0].values.astype('U35')).strip().split(' ',2)[1:]
-#             ds.attrs['relcom']=[s.strip() for s in relcom_str]
-#             out_ds = create_output(out_data,surface_sensitivity,ds)
-#             ds.close()
-#             spec_com = ds.spec001_mr.attrs['long_name']
-#             f_name = out_ds.attrs['varName']
-#             shape_dset = out_ds[f_name].shape
-#             encoding = {'zlib':True,'complevel':5, 'chunksizes' : (1,10, shape_dset[2], shape_dset[3]),
-#             'fletcher32' : False,'contiguous': False, 'shuffle' : False}
-#             outFile_name = os.path.join(outpath,out_ds.attrs['filename'])
-#             print('writing to {}'.format(outFile_name))
-#             out_ds.to_netcdf(outFile_name, encoding={f_name:encoding, 'surface_sensitivity':encoding})
+rule process_flexpart_output_march_zarr:
+    input:
+        flexdust_path = config['flexdust_path']+'/{year}/',
+        flexpart_path = lambda wildcards: get_flexpart_input_paths(wildcards,edate='0331')
+    output: 
+        outpath=directory(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0301-{year}0331.zarr')
+    wildcard_constraints:
+        tag='CLAY|SILT'
+    resources:
+        time="00:30:00",
+        memory_per_job="16GB",
+        max_threads=4
+    threads:1
+    params:
+        x0 = config['domain']['lon0'],
+        x1 = config['domain']['lon1'],
+        y0 = config['domain']['lat0'],
+        y1 = config['domain']['lat1'],
+        rp = config['source_contrib_path'],
+        use_slurm = True,
+        use_dask = True
+    notebook:
+        "../../notebooks/process_raw_output.py.ipynb"
+
+rule process_flexpart_output_april_zarr:
+    input:
+        flexdust_path = config['flexdust_path']+'/{year}/',
+        flexpart_path = lambda wildcards: get_flexpart_input_paths(wildcards,edate='0430')
+    output: 
+        outpath=directory(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0331-{year}0430.zarr')
+    wildcard_constraints:
+        tag='CLAY|SILT',
+    resources:
+        time="00:30:00",
+        memory_per_job="16GB",
+        max_threads=4
+    threads:1
+    params:
+        x0 = config['domain']['lon0'],
+        x1 = config['domain']['lon1'],
+        y0 = config['domain']['lat0'],
+        y1 = config['domain']['lat1'],
+        rp = config['source_contrib_path'],
+        use_slurm = True,
+        use_dask = True
+    
+    notebook:
+        "../../notebooks/process_raw_output.py.ipynb"
+
+
+
+rule process_flexpart_output_may_zarr:
+    input:
+        flexdust_path = config['flexdust_path']+'/{year}/',
+        flexpart_path = lambda wildcards: get_flexpart_input_paths(wildcards,edate='0531')
+    output: 
+        outpath=directory(config['source_contrib_path']+'/{kind}/{size}/{year}/{kind}_{location}_{tag}_{year}0430-{year}0531.zarr')
+    wildcard_constraints:
+        tag='CLAY|SILT',
+    resources:
+        time="00:30:00",
+        memory_per_job="16GB",
+        max_threads=4
+    threads:1
+
+    params:
+        x0 = config['domain']['lon0'],
+        x1 = config['domain']['lon1'],
+        y0 = config['domain']['lat0'],
+        y1 = config['domain']['lat1'],
+        rp = config['source_contrib_path'],
+        use_slurm = True,
+        use_dask = True
+    
+    notebook:
+        "../../notebooks/process_raw_output.py.ipynb"
 
 
 rule create_deposition_timeseries:
