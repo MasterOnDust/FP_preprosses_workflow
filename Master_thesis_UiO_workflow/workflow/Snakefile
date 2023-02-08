@@ -31,28 +31,12 @@ wildcard_constraints:
     comp_type='std_anom|anom|std|comp_only',
     threshold='05-std|1-std|2-std'
 
-# include: "rules/process_ERA5_rules/download.smk"
-# include: "rules/process_ERA5_rules/calc_nao.smk"
-# include: "rules/process_ERA5_rules/utils.smk"
-# include: "rules/process_ERA5_rules/calculate_means.smk"
-# include: "rules/process_ERA5_rules/climatology_calculation.smk"
-# include: "rules/process_ERA5_rules/calculate_anomalies.smk"
-# include: "rules/process_ERA5_rules/calc_EAWMI.smk"
-# include: "rules/process_ERA5_rules/calc_AO.smk"
-# include: "rules/process_ERA5_rules/calc_APV_indecies.smk"
-# include: "rules/precipitation_at_receptor.smk"
 include: 'rules/process_models_data_rules/process_emission_field.smk'
 include: 'rules/process_models_data_rules/process_source_contribution.smk'
 include: 'rules/process_models_data_rules/calc_total_deposition.smk'
-# include: 'rules/create_composite.smk'
-# include: 'rules/create_composite_MERRA2.smk'
-# include: 'rules/process_ERA5_rules/calc_temperature_gradient.smk'
 include: 'rules/create_timeseries_table.smk'
-# include: 'rules/download_orography.smk'
 include: 'rules/process_models_data_rules/trajectory_clustering.smk'
-# include: 'plotting_notebooks.smk'
 include: 'rules/get_dust_loading_trajectories.smk'
-# include: 'plot_agu_figures.smk'
 
 SDATE=config['sdate']
 EDATE=config['edate']
@@ -92,27 +76,5 @@ rule make_source_contrib_may:
                 size=['20micron'],tag=['SILT'],
                 year=[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2011,2012,2013,2014,2015,2016,2017,2018,2019])
 
-rule make_deposition:
-    input:
-        expand('results/model_results/time_series/{kind}/{kind}.{location}.{region}.{size}.MAM.{sdate}-{edate}.nc',
-            location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'], 
-              size=['2micron','20micron'], sdate=MODEL_SDATE,edate=MODEL_EDATE,kind=['drydep', 'wetdep','total_deposition'],
-              region=['total'])
 
 
-
-rule make_deposition_drydep:
-    input:
-        expand('results/model_results/time_series/{kind}/{kind}.{location}.{region}.{size}.MAM.{sdate}-{edate}.nc',
-            location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'], 
-              size=['2micron','20micron'], sdate=MODEL_SDATE,edate=MODEL_EDATE,kind=['drydep'],
-              region=['total'])
-
-
-
-rule make_deposition_wetdep:
-    input:
-        expand('results/model_results/time_series/{kind}/{kind}.{location}.{region}.{size}.MAM.{sdate}-{edate}.nc',
-            location=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'], 
-              size=['2micron','20micron'], sdate=MODEL_SDATE,edate=MODEL_EDATE,kind=['wetdep'],
-              region=['total'])
