@@ -1,6 +1,6 @@
 
 
-def get_paths(path0,sdate, edate, kind, location, size):
+def get_paths(path0,sdate, edate, kind, location, size,ext):
     years = [str(year) for year in range(int(sdate), int(edate)+1)]
     paths=[]
     if size=='2micron':
@@ -10,36 +10,35 @@ def get_paths(path0,sdate, edate, kind, location, size):
     for year in years:
         temp_path=path0+'/'+kind+'/'+size+'/'+year+'/'+kind
         for dstart,dend in zip(['0301','0331','0430'],['0331', '0430','0531']):
-            paths.append(temp_path+'_'+location+'_'+tag+'_'+year+dstart+'-'+year+dend+'.nc')
+            paths.append(temp_path+'_'+location+'_'+tag+'_'+year+dstart+'-'+year+dend+'.'+ext)
 
     return paths
 
 rule resample_source_contrib:
     input:
         paths= lambda wildcards: get_paths(config['source_contrib_path'], wildcards.sdate, wildcards.edate,
-                                           wildcards.kind, wildcards.location, wildcards.size)
+                                           wildcards.kind, wildcards.location, wildcards.size,'zarr')
         
     output:
-        outpath=config['intermediate_results_models']+'/{kind}/{kind}.{location}.{size}.monthly.{sdate}-{edate}.{ext}'
+        outpath=config['intermediate_results_models']+'/{kind}/{kind}.{location}.{size}.monthly.{sdate}-{edate}.nc'
     wildcard_constraints:
         location='|'.join(config['receptors'].keys()),
         size='2micron|20micron',
         kind='drydep|wetdep',
-        ext='nc|zarrr'
-    threads: 1
 
+    threads: 1
     run: 
         from dust.utils.resample import resample_monthly, concatenate_monthly
         import time
         paths=input.paths
-        dsets_list=[resample_monthly(xr.open_dataset(path)) for path in paths]
-
+        if paths[0].endswith('.zarr'):
+            dsets_list=[resample_monthly(xr.open_zarr(path)) for path in paths]
+        else:
+            dsets_list=[resample_monthly(xr.open_dataset(path)) for path in paths]
         dsets=concatenate_monthly(dsets_list)
-
-
         dsets.attrs['history'] = '{} {} '.format(time.ctime(time.time()),'resample_source_contrib') + dsets.attrs['history']
-
         dsets.to_netcdf(output.outpath)
+
 def get_flexpart_input_paths(w, edate):
     first_piece = f'/{w.kind}/{w.size}/{w.year}/{w.year}' 
     sec_piece = f'_00{w.location}/output'
