@@ -82,8 +82,8 @@ rule make_deposition:
 rule make_dust_loading_trajectories:
     input:
         expand('results/model_results/trajectories/dust_loading_traj_{kind}_{size}_{loc}_{sdate}-{edate}.nc',
-        kind=['drydep', 'wetdep'],size='2micron',loc=['LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
+        kind=['drydep', 'wetdep'],size='2micron',loc=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
         sdate=config['m_sdate'], edate=config['m_edate']),
         expand('results/model_results/trajectories/dust_loading_traj_{kind}_{size}_{loc}_{sdate}-{edate}.nc',
-        kind=['drydep', 'wetdep'],size='20micron',loc=['LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
+        kind=['drydep', 'wetdep'],size='20micron',loc=['SACOL','LINGTAI','BAODE','SHAPOTOU','ULANTATAL', 'LANTIAN','LUOCHUAN'],
         sdate=config['m_sdate'], edate=config['m_edate']),
