@@ -208,7 +208,7 @@ rule process_flexpart_output_may_zarr:
 rule create_deposition_timeseries:
     input:
         paths= lambda wildcards: get_paths(config['source_contrib_path'], wildcards.year, wildcards.year,
-                                           wildcards.kind, wildcards.location, wildcards.size)
+                                           wildcards.kind, wildcards.location, wildcards.size, 'zarr')
         
     output:
         outpath=config['intermediate_results_models']+'/timeseries/{kind}/{kind}.{location}.{size}.{freq}.{year}.csv'
@@ -228,18 +228,13 @@ rule create_deposition_timeseries:
             freq=wildcards.freq
         def pre_process(dset):
             dset = dset.drop_vars('surface_sensitivity')
-            dset = dset.drop_dims('numpoint')
+            # dset = dset.drop_dims('numpoint')
             with xr.set_options(keep_attrs=True):
-                if dset.ind_receptor==4 or dset.ind_receptor==3:
-                    # Depostion is accumulative
-                    dset = dset.sum(dim=['btime','lon','lat'])
-                else:
-                    # Concentration is not accumulative
-                    dset = dset.sum(dim=['btime','lon','lat'])
+                dset = dset.sum(dim=['btime','lon','lat'])
             return dset
         
         ds = xr.open_mfdataset(paths,concat_dim=['time'], parallel=True, 
-                chunks={'time':40}, combine='nested',preprocess=pre_process)
+                chunks={'time':40}, combine='nested',preprocess=pre_process, engine='zarr')
         if ds.ind_receptor==4 or ds.ind_receptor==3:
             da_dep = ds[wildcards.kind].resample(time=freq).sum()
         else:
