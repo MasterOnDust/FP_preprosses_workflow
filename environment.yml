@@ -12,6 +12,8 @@ dependencies:
   - netcdf4
   - cartopy
   - dask=2022.*
+  - dask_jobqueue=0.8.*
+  - zarr=2.13.* 
   - snakemake=7.20
   - pip
   - pip:
