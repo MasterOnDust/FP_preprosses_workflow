@@ -17,13 +17,10 @@ configfile: "config/config.yaml"
 
 #----------------------------------CONSTANTS----------------------------------------#
 
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
 import xarray as xr
 
 wildcard_constraints:
     season='DJF|MAM',
-    fig_file_extention='png|pdf',
     location='|'.join(config['receptors'].keys())+'|BAODE',
     region='|'.join(config['source_regions'].keys())+'|total',
 
@@ -35,8 +32,6 @@ include: 'rules/create_timeseries_table.smk'
 include: 'rules/process_models_data_rules/trajectory_clustering.smk'
 include: 'rules/get_dust_loading_trajectories.smk'
 
-SDATE=config['sdate']
-EDATE=config['edate']
 MODEL_SDATE=config['m_sdate']
 MODEL_EDATE=config['m_edate']
 

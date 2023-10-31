@@ -1,50 +1,19 @@
 # This file configures the workflow on a global scale.
 # Setting the global path variables etss
 
-# Setting different global paths where the result should be stored
-# Maybe this should be removed and I'll just hard code the paths?
-download_path: "downloads/monthly"
-figs_path: "results/figs"
-intermediate_files: "downloads/intermediate_results"
-nao_output_path: "results/nao"
-EAWMI_path: "results/eawmi"
-ao_output_path: "results/ao"
-APVI_index_outpath: "results/apv"
-Precipitation: "results/precip"
-
+# Setting different global paths where the result should be stored 
 flexpart_path: "/cluster/work/users/ovewh/FLEXPART_updated_domain"
 flexdust_path: "/cluster/work/users/ovewh/FLEXDUST1999_2019"
 source_contrib_path: "/cluster/work/users/ovewh/source_contrib_1999_2019"
 flexdust_results: "results/model_results/flexdust"
 intermediate_results_models: "results/model_results/intermediate_results"
 source_contrib_results: "results/model_results/source_contrib"
-MERRA2_path : "../../MERRA2"
+
 # Variables name used to constrain the wildcards
-
-variables:
-  - 2m_temperature
-  - mean_sea_level_pressure
-  - snow_depth
-  - temperature
-  - Geopotential
-  - u_component_of_wind
-  - total_precipitation
-  - v_component_of_wind
-  - snow_cover
-
-# Set first and last year to download.
-sdate: 1979
-edate: 2019
-
-# Set first and last year of FLEXPART/FLEXDUST model output
 
 m_sdate: 1999
 m_edate: 2019
 
-# Composite climatological period
-
-clim_date0: 1989
-clim_date1: 2019
 
 # Domain for processing FLEXPART/FLEXDUST model output on
 domain:
@@ -109,11 +78,3 @@ source_regions:
             lon1: 73
             lat0: 26
             lat1: 47        
-
-# Number of latitude bins used in temperature gradient calculation
-n_bins_temperature_gradient: 17
-
-
-# Plotting config:
-
-add_fig_title: True
