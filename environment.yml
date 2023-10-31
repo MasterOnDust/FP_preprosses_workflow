@@ -1,22 +1,25 @@
 name: dust
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
+  - defaults
+  - conda-forge/label/broken
 dependencies:
-  - numpy
-  - xarray=2022.*
+  - xarray>=2022.04.0,<2023.06.0
+  - dask>=2022.04.0,<2023.06.0
+  - distributed>=2022.04.0,<2023.06.0
   - pandas
-  - python=3.10
+  - python>=3.10,<3.12
   - matplotlib
-  - scipy
   - netcdf4
-  - cartopy
-  - dask=2022.*
-  - dask_jobqueue=0.8.*
-  - zarr=2.13.* 
-  - snakemake=7.20
+  - dask-jobqueue
+  - nest-asyncio
+  - zarr
+  - snakemake>=7.20, <7.30
   - pip
+  - fortran-compiler
   - pip:
-      - "--editable=git+https://github.com/MasterOnDust/Thesis_toolbox#egg=Thesis_toolbox"
-      - "--editable=git+https://github.com/MasterOnDust/DUST#egg=DUST"
+      - "--editable=git+https://github.com/MasterOnDust/Thesis_toolbox.git@v0.0.1#egg=Thesis_toolbox"
+      - "--editable=git+https://github.com/MasterOnDust/DUST.git@0.1.2#egg=dust"
+      - "--editable=git+https://github.com/MasterOnDust/flexpart_cluster.git@1.0.1#egg=fpcluster"
       
